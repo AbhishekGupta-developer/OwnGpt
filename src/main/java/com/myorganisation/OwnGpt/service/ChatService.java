@@ -1,30 +1,36 @@
 package com.myorganisation.OwnGpt.service;
 
+
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaChatOptions;
-import org.springframework.ai.ollama.api.OllamaModel;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ChatService {
-    private final OllamaChatModel chatModel;
+    private final ChatModel chatModel;
 
-    public ChatService(OllamaChatModel chatModel) {
+    public ChatService(ChatModel chatModel) {
         this.chatModel = chatModel;
     }
-
     public String test() {
         ChatResponse response = chatModel.call(
                 new Prompt(
-                        "Generate the names of 5 famous Indian celebrity.",
+                        "Calculate 17 × 23",
                         OllamaChatOptions.builder()
-//                                .model(OllamaModel.LLAMA3_1)
-                                .temperature(0.4)
+                                .model("deepseek-r1:1.5b")
+                                .temperature(0D)
+                                .enableThinking()
                                 .build()
                 ));
 
-        return response.toString();
+        String thinking = response.getResult().getMetadata().get("thinking");
+        System.out.println("Reasoning: " + thinking);
+
+        String answer = response.getResult().getOutput().getText();
+        System.out.println("Answer: " + answer);
+
+        return "Working";
     }
 }
